@@ -1,0 +1,11 @@
+{
+    "name": "sim",
+    "version": "0.0.1",
+    "main": "sim.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": ["auth", "server"],
+        "provides": ["sim"]
+    }
+}
