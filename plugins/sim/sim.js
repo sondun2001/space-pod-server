@@ -11,26 +11,30 @@ module.exports = function setup(options, imports, register) {
     // SOCKETS
     
     // SIM CONSTANTS
-    var HULL_A = 1; // 0001
-    var HULL_B = 2; // 0010
-    var HULL_C = 4; // 0100
-    var HULL_D = 8; // 1000
+    var HULL_DAMAGE = 1; // 00000001
+    var AIR_LEAK = 2; // 00000010
+    var OXYGEN_LOW = 4; // 00000100
+    var FUEL_LOW = 8; // 00001000
+    var ENGINE_FAILURE = 16; // 00010000
+    var FUSE = 32; // 00100000
+    var COLLISION = 64; // 01000000
 
     // SIM VARS
     var enginePower = 0;
     var fuelLevel = 1;
     var auxLevel = 1;
     var oxygen = .28;
-    var hullDamage = 0;
+    
+    var warningFlags = 0;
     
     /*
     var mask = FLAG_B | FLAG_C; // 0010 | 0100 => 0110
     if (flags & mask) { // 0101 & 0110 => 0100 => true
         // do stuff
     }
+    warningFlags = HULL_DAMAGE | OXYGEN_LOW;
+    console.log(warningFlags);
     */
-    hullDamage = HULL_A | HULL_B;
-    console.log(hullDamage);
     
     /*
     // stop the loop 2 seconds later 
@@ -51,29 +55,54 @@ module.exports = function setup(options, imports, register) {
 
     var SerialPort = serialPort.SerialPort;
     var arduinoSerialPort = new SerialPort("COM7", {
-        baudrate: 57600
+        baudrate: 9600
     }, false); // this is the openImmediately flag [default is true]
 
+    // TODO: Could buffer on the Arduino before sending
+    var serialData = "";
     arduinoSerialPort.open(function (error) {
         if ( error ) {
             console.log('failed to open: '+error);
         } else {
             console.log('open');
             arduinoSerialPort.on('data', function(data) {
-                console.log('data received: ' + data);
+                serialData += data;
+                try {
+                    var serialJson = JSON.parse(serialData);
+                    if (serialJson) {
+                        // console.log('data received: ' + JSON.stringify(serialJson));
+                        // TODO: Pass json to another function
+                        handleSerialData(serialJson);
+                        serialData = "";
+                    }
+                } catch (error) {
+                    
+                }
             });
+            /*
             arduinoSerialPort.write("ls\n", function(err, results) {
                 console.log('err ' + err);
                 console.log('results ' + results);
             });
+            */
         }
     });
+    
+    function handleSerialData(data) {
+        enginePower = data.ep;
+    }
 
-    /*
-    var serialPort = new SerialPort("/dev/tty-usbserial1", {
-        baudrate: 57600
+    var router = server.router;
+    
+    // Reset the space pod!
+    router.route('/reset')
+    .get(function(req, res) {
+        arduinoSerialPort.write("reset\n", function(err, results) {
+            if (err) return res.status(500).json({error:err});
+            return res.status(200).json({message:"Success!"});
+        });
     });
-    */
+    
     register(null, {
         sim: {
             start: function() {

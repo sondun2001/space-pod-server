@@ -185,7 +185,7 @@ module.exports = function setup(options, imports, register) {
     .post(passport.authenticate('google-token'), tokenController.authenticateGUser);
     
     // Register the router
-    server.use('/', router);
+    //server.use('/', router);
     
     // Register the plugin
     register(null, {
