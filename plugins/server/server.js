@@ -9,16 +9,12 @@ module.exports = function setup(options, imports, register) {
     var bodyParser = require('body-parser');
     var passport = require('passport');
     var session = require('express-session');
-    var ejs = require('ejs');
     
     var app = express();
     
     // Enable cross origin
     app.use(cors());
     
-    // Set view engine to ejs
-    app.set('view engine', 'ejs');
-
     var server = require('http').createServer(app);
     var io = require('socket.io')(server);
     var socketioJwt = require('socketio-jwt');
@@ -39,18 +35,7 @@ module.exports = function setup(options, imports, register) {
     }));
     
     var router = express.Router();
-    /*
-    router.use(function(req, res, next) {
-        // Use this for security?
-        // console.log('Activity');
-        next();
-    });
-    
-    router.get('/', function (req, res) {
-        res.json({message: 'API Server Status: Online'});
-    });
-    */
-    
+  
     // Register router
     app.use('/', router);
     

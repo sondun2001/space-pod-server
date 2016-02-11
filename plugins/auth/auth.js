@@ -14,9 +14,7 @@ module.exports = function setup(options, imports, register) {
     // Controllers
     try {
         var userController = require('./controllers/user');
-        var clientController = require('./controllers/client');
         var tokenController = require('./controllers/token'); // Using jsonwebtoken
-        var oauth2Controller = require('./controllers/oauth2'); // Using oauth2orize  
     } catch (error) {
         console.log(error);
     }
@@ -30,33 +28,6 @@ module.exports = function setup(options, imports, register) {
     passport.deserializeUser(function(user, done) {
         done(null, user);
     });
-    
-    var Token = require('./models/token');
-    var User = require('./models/user');
-    
-    // Configure passport for oauth
-    var BearerStrategy = require('passport-http-bearer').Strategy;
-    passport.use(new BearerStrategy(
-        function(accessToken, callback) {
-            // Hash accessToken first
-            Token.findOne({value: accessToken }, function (err, token) {
-                if (err) { return callback(err); }
-            
-                // No token found
-                if (!token) { return callback(null, false); }
-            
-                User.findOne({ _id: token.userId }, function (err, user) {
-                    if (err) { return callback(err); }
-            
-                    // No user found
-                    if (!user) { return callback(null, false); }
-            
-                    // TODO: Define scopes!
-                    callback(null, user, { scope: '*' });
-                });
-            });
-        }
-    ));
     
     // Allow json web token for individual authentication
     var opts = {}
@@ -155,20 +126,6 @@ module.exports = function setup(options, imports, register) {
     // Authenticate user
     router.route('/auth')
     .post(tokenController.authenticateUser)
-    
-    // Create endpoint handlers for /clients
-    router.route('/clients')
-    .post(isAuthenticated, clientController.postClients)
-    .get(isAuthenticated, clientController.getClients)
-    
-    // Create endpoint handlers for oauth2 authorize
-    router.route('/oauth2/authorize')
-    .get(isAuthenticated, oauth2Controller.authorization)
-    .post(isAuthenticated, oauth2Controller.decision)
-    
-    // Create endpoint handlers for oauth2 token
-    router.route('/oauth2/token')
-    .post(clientController.isClientAuthenticated, oauth2Controller.token);
     
     router.route('/auth/google')
     .get(passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
