@@ -2,7 +2,7 @@ module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
     
-    var fps = 1;
+    var fps = 10;
     var loopId;
     var stateInBuffer;
     var stateOutBuffer = {};
@@ -67,11 +67,14 @@ module.exports = function setup(options, imports, register) {
                         // `delta` is the delta time from the last frame 
                         // console.log('(delta=%s)', delta);
                         
+                        // Attempt to reconnect if disconnected
+                        serialController.connect(null, handleSerialData);
+                        
                         simController.updateState(stateInBuffer);
                         stateInBuffer = null;
                         simController.process(delta);
                         updateOutBuffer();
-                        serialController.send(JSON.stringify(stateOutBuffer));
+                        serialController.send(JSON.stringify(stateOutBuffer) + "\0");
                         
                     }, 1000 / fps);
                     
@@ -89,6 +92,8 @@ module.exports = function setup(options, imports, register) {
     
     function updateOutBuffer() {
         if (!simController.simState) return;
+        stateOutBuffer.ep = simController.simState.enginePower;
         stateOutBuffer.fl = simController.simState.fuelLevel;
+        stateOutBuffer.wf = simController.simState.warningFlags;
     }
 }

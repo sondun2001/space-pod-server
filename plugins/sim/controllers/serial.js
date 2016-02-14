@@ -2,13 +2,13 @@ var serialPort = require("serialport");
 var SerialPort = serialPort.SerialPort;
 
 var arduinoSerialPort;
-var connectHandler;
-var receiveHandler;
-
 var serialData = "";
 var isConnected = false;
 
 exports.connect = function(connectHandler, receiveHandler) {
+    // Already connected
+    if (isConnected) return;
+    
     // Automatically connect? 
     serialPort.list(function (err, ports) {
         ports.forEach(function(port) {
@@ -50,9 +50,6 @@ exports.connect = function(connectHandler, receiveHandler) {
             });
         }
     });
-    
-    this.connectHandler = connectHandler;
-    this.receiveHandler = receiveHandler;
 }
 
 exports.send = function (message, callback) {
@@ -65,5 +62,6 @@ exports.send = function (message, callback) {
 
 function onDisconnect() {
     isConnected = false;
+    console.log("Serial Connection Lost");
 }
 

@@ -17,5 +17,19 @@
         "password": "password"
     },
     "host": "http://localhost:3000",
-    "port": 3000
+    "port": 3000,
+    "sim": {
+        "fuel_burn_rate": 0.005,
+        "fuel_warn_threshold": 0.1
+    },
+    "warningFlags": {
+        "hull_damage": 1,
+        "cabin_pressure": 2,
+        "oxygen_low": 4,
+        "fuel_low": 8,
+        "engine_malfunction": 16,
+        "fuse_out": 32,
+        "collision": 64,
+        "fuel_line": 128
+    }
 }
