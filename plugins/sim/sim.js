@@ -2,7 +2,7 @@ module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
     
-    var fps = 10;
+    var fps = 2;
     var loopId;
     var stateInBuffer;
     var stateOutBuffer = {};
@@ -38,9 +38,6 @@ module.exports = function setup(options, imports, register) {
     });
     
     function handleSerialData(data) {
-        if (stateInBuffer) {
-            console.warn("State buffer is not empty!")
-        }
         stateInBuffer = data;
     }
     
@@ -95,5 +92,9 @@ module.exports = function setup(options, imports, register) {
         stateOutBuffer.ep = simController.simState.enginePower;
         stateOutBuffer.fl = simController.simState.fuelLevel;
         stateOutBuffer.wf = simController.simState.warningFlags;
+        stateOutBuffer.al = simController.simState.auxLevel;
+        stateOutBuffer.cr = simController.battery.getChargeRate();
+        stateOutBuffer.dr = simController.battery.getDrainRate();
+        console.log(JSON.stringify(stateOutBuffer));
     }
 }

@@ -20,7 +20,12 @@
     "port": 3000,
     "sim": {
         "fuel_burn_rate": 0.005,
-        "fuel_warn_threshold": 0.1
+        "target_oxygen": 21,
+        "target_pressure": 100,
+        "fuel_low_threshold": 0.1,
+        "battery_low_threshold": 0.1,
+        "oxygen_low_threshold": 19.5,
+        "oxygen_high_threshold": 23.5
     },
     "warningFlags": {
         "hull_damage": 1,
@@ -28,7 +33,7 @@
         "oxygen_low": 4,
         "fuel_low": 8,
         "engine_malfunction": 16,
-        "fuse_out": 32,
+        "battery_health": 32,
         "collision": 64,
         "fuel_line": 128
     }

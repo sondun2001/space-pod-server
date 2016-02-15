@@ -7,6 +7,7 @@ var SimState = thinky.createModel("SimState", {
     auxLevel: type.number(),
     oxygenLevel: type.number(),
     cabinPressure: type.number(),
+    waterLevel: type.number(),
     state: type.string(),
     warnings: type.number()
 });

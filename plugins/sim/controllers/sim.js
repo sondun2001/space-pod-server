@@ -4,17 +4,19 @@ var async = require('async');
 var settings = require('nconf');
 
 // SPACE POD COMPONENTS
-var warningSystem = require('./components/warningSystem.js');
-var engine = require('./components/engine.js');
-
-// SIM CONSTANTS
-var TARGET_OXYGEN = 21;
-var TARGET_CABIN_PRESSURE = 14;
+var components = require('./components');
+var fuelSystem = components.FuelSystem;
+var battery = components.Battery;
+var engine = components.Engine;
+var warningSystem = components.WarningSystem;
+var solarPanels = components.SolarPanels;
+var ECLSS = components.ECLSS;
 
 var SimState = require('../models/simState');
 var simState;
 
-exports.init = function (callback) {
+module.exports.battery = battery;
+module.exports.init = function (callback) {
     // TODO: Find if sim state exists in DB
     simState = null;
     exports.simState = simState;
@@ -23,8 +25,8 @@ exports.init = function (callback) {
         enginePower: 0,
         fuelLevel: 1,
         auxLevel: 1,
-        oxygenLevel: TARGET_OXYGEN, // Low is under 19.5, enriched is higher than 23.5
-        cabinPressure: TARGET_CABIN_PRESSURE, // Per square inch
+        oxygenLevel: settings.get("sim:target_oxygen"),
+        cabinPressure: settings.get("sim:target_pressure"),
         state: "OFF",
         warningFlags: 0
     }
@@ -37,7 +39,7 @@ exports.init = function (callback) {
     }
 }
 
-exports.updateState = function (data) {
+module.exports.updateState = function (data) {
     if (data == undefined || data == null) return;
     
     // Engine power
@@ -54,7 +56,7 @@ exports.updateState = function (data) {
     }
 }
 
-exports.process = function (delta) {
+module.exports.process = function (delta) {
     if (!simState) return;
     
     // If state=="LAUNCH"
@@ -62,10 +64,11 @@ exports.process = function (delta) {
             // Use Fuel
             // Did something go wrong?
     
-    // If O2 < 21 Generate Oxygen and subtract power
     // If pressure low, Pressurize Cabin and subtract power
+    
     engine.process(simState, delta);
     warningSystem.process(simState, delta);
-    
-    console.log(JSON.stringify(simState));
+    solarPanels.process(simState, delta);
+    ECLSS.process(simState, delta);
+    //console.log(JSON.stringify(simState));
 }
