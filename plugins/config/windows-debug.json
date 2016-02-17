@@ -1,5 +1,5 @@
 {
-    "play_sound":false,
+    "play_sound":true,
     "rethink": {
         "host": "192.168.1.12",
         "port": 28015,
