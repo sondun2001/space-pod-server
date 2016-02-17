@@ -1,14 +1,7 @@
 ##Setup
 
-###Install Global Node Modules
 ```
-npm install pm2 -g
-npm install grunt -g
-npm install -g mocha
-```
-
-###First time setup.
-```
+git clone https://github.com/sondun2001/space-pod-server.git
 npm install
 ```
 
@@ -21,4 +14,5 @@ npm rebuild
 ### How to run windows-debug
 ```
 set NODE_ENV=windows-debug&&node app.js
+export NODE_ENV="windows-debug"
 ```

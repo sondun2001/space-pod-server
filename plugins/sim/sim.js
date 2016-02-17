@@ -1,10 +1,10 @@
 module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
-    
+    /*
     var CLI = require('clui');
     var Gauge = CLI.Gauge;
-    
+    */
     var fps = 2;
     var loopId;
     var stateInBuffer;
@@ -15,7 +15,8 @@ module.exports = function setup(options, imports, register) {
     
     var simController = require('./controllers/sim.js');
     var serialController = require('./controllers/serial.js');
-
+    var UI = require('./controllers/ui.js');
+    
     // REST API
     
     // SOCKETS
@@ -76,6 +77,8 @@ module.exports = function setup(options, imports, register) {
                         updateOutBuffer();
                         serialController.send(JSON.stringify(stateOutBuffer) + "\0");
                         
+                        UI.render(simController);
+                        
                     }, 1000 / fps);
                     
                     console.log("Starting Sim. loopId = " + loopId);
@@ -106,10 +109,12 @@ module.exports = function setup(options, imports, register) {
         stateOutBuffer.cr = Math.round(simController.battery.getChargeRate());
         stateOutBuffer.dr = Math.round(simController.battery.getDrainRate());
         //console.log(JSON.stringify(stateOutBuffer));
+        /*
         console.log('\033[2J');
         console.log("Fuel:    " + Gauge(stateOutBuffer.fl, 1, 20, 1));
         console.log("Battery: " + Gauge(stateOutBuffer.al, 1, 20, 1));
         console.log("Water:   " + Gauge(stateOutBuffer.wl, 1, 20, 1));
         console.log("Oxygen:  " + Gauge(stateOutBuffer.ol, 1, 20, 1));
+        */
     }
 }
