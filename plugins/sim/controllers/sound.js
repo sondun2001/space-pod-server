@@ -11,7 +11,8 @@ function init() {
 
     // you can also listen for various callbacks: 
     music.on('complete', function () {
-        console.log('Done with playback!');
-        music.play();
+        setTimeout(function () {
+            music.play(); // pause the music after five seconds 
+        }, 5000);
     });
 }

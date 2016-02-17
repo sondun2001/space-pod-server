@@ -9,7 +9,7 @@
     "rethink": {
         "host": "localhost",
         "port": 28015,
-        "db": "mess"
+        "db": "spacepod"
     },
     "test_user": { 
         "email": "sondun2001@gmail.com",
