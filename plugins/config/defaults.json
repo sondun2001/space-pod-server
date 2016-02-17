@@ -1,5 +1,5 @@
 {
-    "useChildProcess":true,
+    "play_sound":true,
     "secret": "spacepodecret",
     "issuer": "spacepod",
     "audience": ["spacepod", "spacepod.com"],
@@ -19,13 +19,14 @@
     "host": "http://localhost:3000",
     "port": 3000,
     "sim": {
+        "battery_watts": 1000,
         "fuel_burn_rate": 0.005,
-        "target_oxygen": 21,
+        "target_oxygen": 0.21,
         "target_pressure": 100,
         "fuel_low_threshold": 0.1,
         "battery_low_threshold": 0.1,
-        "oxygen_low_threshold": 19.5,
-        "oxygen_high_threshold": 23.5
+        "oxygen_low_threshold": 0.195,
+        "oxygen_high_threshold": 0.235
     },
     "warningFlags": {
         "hull_damage": 1,

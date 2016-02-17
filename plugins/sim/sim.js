@@ -2,6 +2,9 @@ module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
     
+    var CLI = require('clui');
+    var Gauge = CLI.Gauge;
+    
     var fps = 2;
     var loopId;
     var stateInBuffer;
@@ -12,7 +15,7 @@ module.exports = function setup(options, imports, register) {
     
     var simController = require('./controllers/sim.js');
     var serialController = require('./controllers/serial.js');
-    
+
     // REST API
     
     // SOCKETS
@@ -47,12 +50,12 @@ module.exports = function setup(options, imports, register) {
              simController.init(function (simState) {
                 callback(null, simState);
             });
-        },
+        }/*,
         function(callback){
             serialController.connect(function() {
                 callback(null, null);
             }, handleSerialData);
-        }
+        }*/
     ],
     // optional callback
     function(err, results) {
@@ -89,12 +92,24 @@ module.exports = function setup(options, imports, register) {
     
     function updateOutBuffer() {
         if (!simController.simState) return;
+        var fl = simController.simState.fuelLevel;
+        var al = simController.simState.auxLevel;
+        var wl = simController.simState.waterLevel;
+        var ol = simController.simState.oxygenLevel;
+        
         stateOutBuffer.ep = simController.simState.enginePower;
-        stateOutBuffer.fl = simController.simState.fuelLevel;
+        stateOutBuffer.fl = Number(fl.toFixed(2));
+        stateOutBuffer.al = Number(al.toFixed(2));
+        stateOutBuffer.wl = Number(wl.toFixed(2));
+        stateOutBuffer.ol = Number(ol.toFixed(2));
         stateOutBuffer.wf = simController.simState.warningFlags;
-        stateOutBuffer.al = simController.simState.auxLevel;
-        stateOutBuffer.cr = simController.battery.getChargeRate();
-        stateOutBuffer.dr = simController.battery.getDrainRate();
-        console.log(JSON.stringify(stateOutBuffer));
+        stateOutBuffer.cr = Math.round(simController.battery.getChargeRate());
+        stateOutBuffer.dr = Math.round(simController.battery.getDrainRate());
+        //console.log(JSON.stringify(stateOutBuffer));
+        console.log('\033[2J');
+        console.log("Fuel:    " + Gauge(stateOutBuffer.fl, 1, 20, 1));
+        console.log("Battery: " + Gauge(stateOutBuffer.al, 1, 20, 1));
+        console.log("Water:   " + Gauge(stateOutBuffer.wl, 1, 20, 1));
+        console.log("Oxygen:  " + Gauge(stateOutBuffer.ol, 1, 20, 1));
     }
 }

@@ -13,6 +13,7 @@ module.exports.connect = function(connectHandler, receiveHandler) {
     // Automatically connect if no port name specified in config
     var portToConnect = "";
     if (portToConnect == "") {
+        // Keep checking for a port if not connected
         serialPort.list(function (err, ports) {
             ports.forEach(function(port) {
                 portToConnect = port.comName;
@@ -20,6 +21,9 @@ module.exports.connect = function(connectHandler, receiveHandler) {
                 console.log("pnpId: " + port.pnpId);
                 console.log("manufacturer: " + port.manufacturer);
             });
+            
+            // No port to connect to
+            if (portToConnect == "") return;
             
             arduinoSerialPort = new SerialPort(portToConnect, {
                 baudrate: 9600,
@@ -30,7 +34,6 @@ module.exports.connect = function(connectHandler, receiveHandler) {
             arduinoSerialPort.open(function (error) {
                 if ( error ) {
                     console.log('failed to open: '+error);
-                    isConnected = false;
                 } else {
                     console.log('Serial connection open');
                     isConnected = true;

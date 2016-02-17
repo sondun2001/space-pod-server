@@ -13,17 +13,20 @@
     "async": "^1.4.2",
     "bcrypt": "^0.8.5",
     "body-parser": "^1.13.3",
-    "btree": "^1.0.1",
+    "cli-color": "^1.1.0",
+    "clui": "^0.3.1",
     "cors": "^2.7.1",
     "express": "^4.13.3",
     "express-session": "^1.11.3",
     "jsonwebtoken": "^5.4.0",
     "moment": "^2.10.6",
     "nconf": "^0.7.2",
+    "node-aplay": "^1.0.3",
     "node-gameloop": "^0.1.0",
     "node-redis-streamify": "^0.1.5",
     "passport": "^0.3.0",
     "passport-google-oauth": "^0.2.0",
+    "passport-google-token": "^0.1.2",
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^1.2.1",
@@ -37,10 +40,5 @@
     "underscore": "^1.8.3",
     "validator": "^4.8.0",
     "winston": "^2.1.1"
-  },
-  "devDependencies": {
-    "mocha": "^2.3.3",
-    "should": "^7.1.0",
-    "supertest": "^1.1.0"
   }
 }

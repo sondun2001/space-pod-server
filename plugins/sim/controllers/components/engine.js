@@ -2,6 +2,7 @@
 var settings = require("nconf");
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
+var Sound = require('node-aplay');
 
 var FUEL_BURN_RATE = settings.get("sim:fuel_burn_rate");
 

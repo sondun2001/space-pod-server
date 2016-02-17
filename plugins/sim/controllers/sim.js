@@ -2,6 +2,7 @@ var _ = require('underscore');
 var settings = require('nconf');
 var async = require('async');
 var settings = require('nconf');
+var soundController = require('./sound');
 
 // SPACE POD COMPONENTS
 var components = require('./components');
@@ -23,8 +24,9 @@ module.exports.init = function (callback) {
     
     var config = {
         enginePower: 0,
-        fuelLevel: 1,
-        auxLevel: 1,
+        fuelLevel: .2,
+        auxLevel: .2,
+        waterLevel: 1,
         oxygenLevel: settings.get("sim:target_oxygen"),
         cabinPressure: settings.get("sim:target_pressure"),
         state: "OFF",
@@ -64,7 +66,7 @@ module.exports.process = function (delta) {
             // Use Fuel
             // Did something go wrong?
     
-    // If pressure low, Pressurize Cabin and subtract power
+    simState.oxygenLevel -= 0.00001 * delta; // TODO: Multiply by number of occupants
     
     engine.process(simState, delta);
     warningSystem.process(simState, delta);

@@ -1,5 +1,6 @@
 // WARNING SYSTEM
 var settings = require('nconf');
+var Sound = require('node-aplay');
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
 
@@ -32,7 +33,7 @@ m_warningFlags &= ~FUEL_LOW
 module.exports.process = function(simState, delta) {
     
     // If not enough power, disable all warnings
-    if (!battery.drain(simState, 1, delta)) return;
+    battery.drain(simState, 1, delta);
     
     // Check battery
     if (simState.auxLevel < BATTERY_LOW_THRESHOLD) {

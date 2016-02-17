@@ -1,5 +1,5 @@
 {
-    "useChildProcess":false,
+    "play_sound":false,
     "rethink": {
         "host": "192.168.1.12",
         "port": 28015,
