@@ -14,5 +14,9 @@ npm rebuild
 ### How to run windows-debug
 ```
 set NODE_ENV=windows-debug&&node app.js
-export NODE_ENV="windows-debug"
+```
+
+### How to run pi
+```
+export NODE_ENV="pi"
 ```

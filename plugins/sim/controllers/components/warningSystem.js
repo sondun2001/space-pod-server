@@ -1,6 +1,5 @@
 // WARNING SYSTEM
 var settings = require('nconf');
-var Sound = require('node-aplay');
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
 

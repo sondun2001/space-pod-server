@@ -17,10 +17,14 @@ module.exports.connect = function(connectHandler, receiveHandler) {
         serialPort.list(function (err, ports) {
             ports.forEach(function(port) {
                 portToConnect = port.comName;
+                /*
                 console.log("comName: " + port.comName);
                 console.log("pnpId: " + port.pnpId);
                 console.log("manufacturer: " + port.manufacturer);
+                */
             });
+            
+            // Present option to select which port
             
             // No port to connect to
             if (portToConnect == "") return;
@@ -33,9 +37,9 @@ module.exports.connect = function(connectHandler, receiveHandler) {
             // TODO: Could buffer on the Arduino before sending
             arduinoSerialPort.open(function (error) {
                 if ( error ) {
-                    console.log('failed to open: '+error);
+                    // console.log('failed to open: '+error);
                 } else {
-                    console.log('Serial connection open');
+                    // console.log('Serial connection open');
                     isConnected = true;
                     if (connectHandler) connectHandler();
                     arduinoSerialPort.on('data', function(data) {
