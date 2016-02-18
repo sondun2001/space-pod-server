@@ -3,6 +3,9 @@
 ```
 git clone https://github.com/sondun2001/space-pod-server.git
 npm install
+sudo apt-get install alsa-base alsa-utils
+sudo apt-get install libasound2-dev
+alsamixer
 ```
 
 ###Switching platforms

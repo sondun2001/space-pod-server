@@ -24,8 +24,8 @@ module.exports.init = function (callback) {
     
     var config = {
         enginePower: 0,
-        fuelLevel: .2,
-        auxLevel: .2,
+        fuelLevel: 1,
+        auxLevel: 1,
         waterLevel: 1,
         oxygenLevel: settings.get("sim:target_oxygen"),
         cabinPressure: settings.get("sim:target_pressure"),

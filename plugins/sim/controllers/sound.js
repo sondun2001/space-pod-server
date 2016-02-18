@@ -39,6 +39,7 @@ function Sound(filePath) {
     this._isValid = true;
     this._isPlaying = false;
     this._isPaused = false;
+    this._volume = 1;
 };
 
 util.inherits(Sound, EventEmitter);
@@ -53,6 +54,7 @@ Sound.prototype.stop = function() {
 Sound.prototype.pause = function() {
      if (this._isPaused) {
         this.speaker = new Volume();
+        this.speaker.setVolume(this._volume);
         this.speaker.pipe(new Speaker(this.format));
         this.stream.pipe(this.speaker);
       } else {
@@ -75,11 +77,6 @@ Sound.prototype.play = function() {
     var fileStream = fs.createReadStream(this._filePath);
     self.fileStream = fileStream;
     
-    fileStream.on('end', function() {
-        this._isPlaying = false;
-        self.emit('end');
-    });
-    
     var ext = path.extname(self._filePath);
     if (ext == '.mp3') {
         var decoder = new lame.Decoder();
@@ -89,9 +86,15 @@ Sound.prototype.play = function() {
         self.stream = reader;
     }
     
+    self.stream.on('end', function() {
+        this._isPlaying = false;
+        self.emit('end');
+    });
+    
     self.stream.once('format', function (format) {
         self.format = format;
         self.speaker = new Volume();
+        self.speaker.setVolume(self._volume);
         self.speaker.pipe(new Speaker(format));
         self.stream.pipe(self.speaker);
     });
@@ -102,6 +105,7 @@ Sound.prototype.play = function() {
 
 Sound.prototype.setVolume = function(volume) {
     //self._player.setVolume(volume);
+    this._volume = volume;
     if (!this.speaker) return;
     this.speaker.setVolume(volume);
 }
@@ -113,20 +117,24 @@ init();
 function init() {
     if (!settings.get("play_sound")) return;
     
-    var beep = new Sound('bleep.mp3');
-    beep.setVolume(0.2);
-    beep.play();
-    beep.on('end',function(item){
-        setTimeout(function () {
-            beep.play();
-        }, 10000);
+    var airlockSound = new Sound('airlock.mp3');
+    airlockSound.on('end',function(item){
+        var beep = new Sound('bleep.mp3');
+        beep.setVolume(0.2);
+        beep.play();
+        beep.on('end',function(item){
+            setTimeout(function () {
+                beep.play();
+            }, 10000);
+        });
+        
+        var hum = new Sound('hum.mp3');
+        hum.play();
+        hum.on('end',function(item){
+            setTimeout(function () {
+                hum.play();
+            }, 1);
+        });
     });
-    
-    var hum = new Sound('hum.mp3');
-    hum.play();
-    hum.on('end',function(item){
-        setTimeout(function () {
-            hum.play();
-        }, 1);
-    });
+    airlockSound.play();
 }
