@@ -1,9 +1,0 @@
-{
-    "mongo_uri" : "mongodb://mess_master:phaze420@ds063134.mongolab.com:63134/mess_web_services",
-    "redis" : {
-        "host" : "pub-redis-18967.us-east-1-2.4.ec2.garantiadata.com",
-        "port" : "18967",
-        "pass" : "phaze420"
-    },
-    "port": 3000
-}
