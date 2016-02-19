@@ -121,7 +121,7 @@ function init() {
     airlockSound.on('end',function(item){
         var beep = new Sound('bleep.mp3');
         beep.setVolume(0.2);
-        beep.play();
+        //beep.play(); // TODO: Re-enable once we re-encode this with lame
         beep.on('end',function(item){
             setTimeout(function () {
                 beep.play();
