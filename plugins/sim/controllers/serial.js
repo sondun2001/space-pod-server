@@ -31,10 +31,11 @@ SerialConnection.prototype.findPort = function (callback) {
             });
             
             // Present option to select which port
+            callback(portToConnect);
         });
+    } else {
+        callback(portToConnect);
     }
-    
-    callback(portToConnect);
 }
 
 SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
