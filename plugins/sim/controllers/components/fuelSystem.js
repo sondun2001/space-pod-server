@@ -1,12 +1,16 @@
-var checkFuelLine = false;
-var systemCheckLapse = 0;
+var battery = require('./battery');
+var _checkFuelLine = false;
+var _systemCheckLapse = 0;
 
 module.exports.checkFuelLine = function() {
-    return checkFuelLine;
+    return _checkFuelLine;
 }
 
 module.exports.demandFuel = function(simState, demand, delta) {
-    systemCheckLapse += delta;
+    // Electricity required to pump fuel
+    battery.drain(simState, 20, delta);
+    
+    _systemCheckLapse += delta;
     
     var fuelInput = demand;
     if (simState.fuelLevel - demand < 0) {
@@ -14,10 +18,10 @@ module.exports.demandFuel = function(simState, demand, delta) {
     }
     
     // Can't obtain fuel to issue with fuel line!
-    if (checkFuelLine || (systemCheckLapse > 60 && Math.random() * 100 < 0.01)) {
-       checkFuelLine = true;
+    if (_checkFuelLine || (_systemCheckLapse > 60 && Math.random() * 100 < 0.01)) {
+       _checkFuelLine = true;
        fuelInput = 0;
-       systemCheckLapse = 0;
+       _systemCheckLapse = 0;
     }
     
     simState.fuelLevel -= fuelInput;

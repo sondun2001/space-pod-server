@@ -6,11 +6,13 @@ var SerialConnection = function() {
     this._arduinoSerialPort = null;
     this._serialData = "";
     this._isConnected = false;
+    this._isConnecting = false;
     this._onConnect = null;
     this._onReceive = null;
     
     function onDisconnect() {
         this._isConnected = false;
+        this._isConnecting = false;
         console.log("Serial Connection Lost");
     }
 }
@@ -62,15 +64,17 @@ SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
         }, false); // this is the openImmediately flag [default is true]
         
         // Assume we are going to connect, to prevent duplicate attempts
-        self._isConnected = true;
+        self._isConnecting = true;
         
         // TODO: Could buffer on the Arduino before sending
         self._arduinoSerialPort.open(function (error) {
+            self._isConnecting = false;
             if ( error ) {
                 self._isConnected = false;
                 console.log('failed to open: '+error);
                 if (self._onConnect) self._onConnect('Connection Not Oppened');
             } else {
+                self._isConnected = true;
                 console.log('Serial connection open');
                 if (self._onConnect) self._onConnect();
                 self._arduinoSerialPort.on('data', function(data) {
@@ -106,7 +110,7 @@ SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
 }
 
 SerialConnection.prototype.send = function (message, callback) {
-    if (!this._isConnected) {
+    if (!this._isConnected || this._isConnecting) {
         if (callback) callback('Not Connected', null);
         return;
     }
