@@ -5,5 +5,5 @@
         "port": 28015,
         "db": "spacepod"
     },
-    "serial_port":"/dev/ttyAMA0"
+    "serial_port":"/dev/ttyUSB0"
 }
