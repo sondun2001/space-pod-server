@@ -1,8 +1,7 @@
 var settings = require('nconf');
 var battery = require('./battery');
-var waterLevel = 255;
 
-var targetOxygen = settings.get("sim:target_oxygen");
+var TARGET_OXYGEN = settings.get("sim:target_oxygen");
 
 // http://science.howstuffworks.com/oxygen-made-aboard-spacecraft.htm
 // http://www.spaceacademy.net.au/flight/emg/spcdp.htm
@@ -42,7 +41,7 @@ LOOP WHILE press > press0 / 10  'do while pressure>10% initial
 
 module.exports.process = function(simState, delta) {
     // Use water to generate oxygen
-    if (simState.oxygenLevel < targetOxygen) {
+    if (simState.oxygenLevel < TARGET_OXYGEN) {
         var waterRequired = 0.0001 * delta;
         if (simState.waterLevel > waterRequired && battery.drain(simState, 10, delta)) {
             simState.waterLevel -= waterRequired;

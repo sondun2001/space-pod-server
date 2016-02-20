@@ -21,6 +21,7 @@
     "express-session": "^1.11.3",
     "jsonwebtoken": "^5.4.0",
     "lame": "^1.2.3",
+    "lerp": "^1.0.3",
     "moment": "^2.10.6",
     "nconf": "^0.7.2",
     "node-gameloop": "^0.1.0",

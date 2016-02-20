@@ -29,11 +29,9 @@ var mask = ~(FLAG_A | FLAG_C); // ~0101 => 1010
 flags &= mask;   // 1101 & 1010 => 1000
 m_warningFlags &= ~FUEL_LOW
 */
-var warningAlert = new Sound('warning.mp3');
-warningAlert.on('end',function(item){
-    setTimeout(function () {
-        warningAlert.play();
-    }, 0);
+var _warningSound = new Sound('warning.mp3');
+_warningSound.on('end',function(item){
+    _warningSound.play();
 });
 
 module.exports.process = function(simState, delta) {
@@ -68,10 +66,10 @@ module.exports.process = function(simState, delta) {
         simState.warningFlags &= ~OXYGEN;
     }
     
-    if (simState.warningFlags > 0 && !warningAlert.isPlaying()) {
-        warningAlert.play();
-    } else if (simState.warningFlags == 0 && warningAlert.isPlaying()) {
-        warningAlert.stop();
+    if (simState.warningFlags > 0 && !_warningSound.isPlaying()) {
+        _warningSound.play();
+    } else if (simState.warningFlags == 0 && _warningSound.isPlaying()) {
+        _warningSound.stop();
     }
 }
 

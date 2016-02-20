@@ -8,7 +8,7 @@ module.exports.checkFuelLine = function() {
 
 module.exports.demandFuel = function(simState, demand, delta) {
     // Electricity required to pump fuel
-    battery.drain(simState, 20, delta);
+    if (!battery.drain(simState, 20, delta)) return 0;
     
     _systemCheckLapse += delta;
     

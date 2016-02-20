@@ -3,16 +3,17 @@ var settings = require("nconf");
 var Sound = require('../sound.js').Sound;
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
+var lerp = require('lerp');
 
 var FUEL_BURN_RATE = settings.get("sim:fuel_burn_rate");
 
-var _powerInput = 1;
+var _powerInput = 0;
 var _targetEnginePower = 0;
 var _enginePowerTime = 0;
 
-var engineSound = new Sound('rocket.mp3');
-engineSound.on('end',function(item) {
-    engineSound.play();
+var _engineSound = new Sound('rocket.mp3');
+_engineSound.on('end',function(item) {
+    _engineSound.play();
 });
 
 module.exports.setPower = function(input) {
@@ -20,8 +21,6 @@ module.exports.setPower = function(input) {
 }
 
 module.exports.process = function(simState, delta) {
-    if (_powerInput == 0) return;
-    
     var enginePowerFuelDemand = Math.pow(_powerInput, 3) * FUEL_BURN_RATE * delta;
     
     // Obtain FUEL
@@ -36,18 +35,18 @@ module.exports.process = function(simState, delta) {
     if (simState.enginePower != _targetEnginePower) {
         var percent = _enginePowerTime / 10;
         if (percent < 0) { percent = 0; } else if (percent > 1) { percent = 1; }
-        simState.enginePower = _targetEnginePower * percent;
+        simState.enginePower = lerp(simState.enginePower, _targetEnginePower, percent);
         _enginePowerTime += delta;
     }
     
     if (simState.enginePower > 0) {
-        if (!engineSound.isPlaying()) engineSound.play();
-        engineSound.setVolume(simState.enginePower);
+        if (!_engineSound.isPlaying()) _engineSound.play();
+        _engineSound.setVolume(simState.enginePower);
         
         // Charge battery when engine is on
         battery.charge(simState, 10 * simState.enginePower, delta);
-    } else if (simState.enginePower == 0 && engineSound.isPlaying()) {
-        engineSound.stop();
+    } else if (simState.enginePower == 0 && _engineSound.isPlaying()) {
+        _engineSound.stop();
     }
     
     // Calculate Thrust?
