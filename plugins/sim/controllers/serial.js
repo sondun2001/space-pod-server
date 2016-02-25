@@ -71,11 +71,11 @@ SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
             self._isConnecting = false;
             if ( error ) {
                 self._isConnected = false;
-                console.log('failed to open: '+error);
+                // console.log('failed to open: '+error);
                 if (self._onConnect) self._onConnect('Connection Not Oppened');
             } else {
                 self._isConnected = true;
-                console.log('Serial connection open');
+                // console.log('Serial connection open');
                 if (self._onConnect) self._onConnect();
                 self._arduinoSerialPort.on('data', function(data) {
                     //console.log("Serial Data: " + data);
@@ -90,19 +90,6 @@ SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
                         if (self._onReceive !== null) self._onReceive(serialJson);
                         self._serialData = "";
                     }
-                    /*
-                    try {
-                        var serialJson = JSON.parse(self._serialData);
-                        if (serialJson) {
-                            // console.log('data received: ' + JSON.stringify(serialJson));
-                            // TODO: Pass json to another function
-                            if (self._onReceive !== null) self._onReceive(serialJson);
-                            self._serialData = "";
-                        }
-                    } catch (error) {
-                        // Not JSON yet
-                    }
-                    */
                 });
             }
         });

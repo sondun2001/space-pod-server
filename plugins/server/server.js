@@ -17,7 +17,6 @@ module.exports = function setup(options, imports, register) {
     
     var server = require('http').createServer(app);
     var io = require('socket.io')(server);
-    var socketioJwt = require('socketio-jwt');
     
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }));
@@ -39,17 +38,11 @@ module.exports = function setup(options, imports, register) {
     // Register router
     app.use('/', router);
     
-    //https://auth0.com/blog/2014/01/15/auth-with-socket-io/
-    io.set('authorization', socketioJwt.authorize({
-        secret: settings.get("secret"),
-        handshake: true
-    }));
-    
-    //io.on('connection', function () { /* … */ });
-    io.sockets
-    .on('connection', function (socket) {
-        console.log(socket.handshake.decoded_token.name, 'connected');
-        //socket.on('event');
+    io.on('connection', function (socket) {
+        console.log(' Socket connected');
+        socket.on('disconnect', function(){
+            console.log('User disconnected');
+        });
     });
     
     server.listen(settings.get('port'), function (callback) {
@@ -67,7 +60,8 @@ module.exports = function setup(options, imports, register) {
                     return express.Router();
                 },
                 
-                router : router
+                router : router,
+                socket: io
             }
         });
     });

@@ -13,41 +13,55 @@ var warningSystem = components.WarningSystem;
 var solarPanels = components.SolarPanels;
 var ECLSS = components.ECLSS;
 
-var SimState = require('../models/simState');
-var simState;
+var Models = require('../models/all.js');
+
+var simState = null;
+var spacePod = null;
 
 module.exports.battery = battery;
 module.exports.init = function (callback) {
-    // TODO: Find if sim state exists in DB
     simState = null;
-    exports.simState = simState;
+    spacePod = null;
     
-    var config = {
-        enginePower: 0,
-        fuelLevel: 1,
-        auxLevel: 1,
-        waterLevel: 1,
-        oxygenLevel: settings.get("sim:target_oxygen"),
-        cabinPressure: settings.get("sim:target_pressure"),
-        state: "OFF",
-        warningFlags: 0
-    }
+    // TODO: Use ASYNC flow to get state and pod, or create new one
+    Models.SimState.run().then(function(states) {
+        if (states && states.length > 0) {
+            simState = states[0];
+        } else {
+            simState = new Models.SimState({});
+            simState.save(function(err) {
+                if (!err) {
+                    if (callback != null) callback(simState);
+                }
+            });
+        }
+        if (callback != null) callback(simState);
+        exports.simState = simState;
+    }).error(function(err) {
+        if (err) {
+            console.error(err);
+        }
+    });
     
-    simState = new SimState(config);
-    exports.simState = simState;
-    
-    if (callback != null) {
-        callback(simState);
+    exports.spacePod = spacePod;
+}
+
+module.exports.updatePod = function(data, callback) {
+    if (spacePod) {
+        for (var attrname in data) { 
+            if (spacePod.hasOwnProperty(attrname)) spacePod[attrname] = data[attrname]; 
+        }
+        
+        spacePod.save(function(err) {
+            if (!err) {
+                if (callback != null) callback(spacePod);
+            }
+        });
     }
 }
 
-module.exports.updateState = function (data) {
+module.exports.updateState = function (data, callback) {
     if (data == undefined || data == null) return;
-    
-    // Engine power
-    if (data.hasOwnProperty("epi")) {
-        engine.setPower(data.epi);
-    }
     
     // console.log("Incoming: " + JSON.stringify(data));
     // Override any properties in sim with incoming data
@@ -55,7 +69,17 @@ module.exports.updateState = function (data) {
         for (var attrname in data) { 
             if (simState.hasOwnProperty(attrname)) simState[attrname] = data[attrname]; 
         }
+        
+        simState.save(function(err) {
+            if (!err) {
+                if (callback != null) callback(simState);
+            }
+        });
     }
+}
+
+module.exports.setEnginePower = function (power) {
+    engine.setPower(power);
 }
 
 module.exports.process = function (delta) {

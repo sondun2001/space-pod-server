@@ -1,9 +1,9 @@
 module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
-    var fps = 10;
+    var fps = 15;
     var loopId;
-    var stateInBuffer;
+    var _serialInBuffer;
     var _stateOutBuffer = {};
     
     var server = imports.server;
@@ -18,30 +18,54 @@ module.exports = function setup(options, imports, register) {
     var SEND_SERIAL_INTERVAL = 0.2;
     var PRINT_CONSOLE_INTERVAL = 2;
     
-    // var UI = require('./controllers/ui.js');
+    var UI = require('./controllers/ui.js');
     
-    // REST API
+    ///////////////////// Sockets /////////////////////
     
-    // SOCKETS
+    var socket = server.socket;
+    socket.on('spacePod', function(data) {
+        simController.updatePod(data);
+    });
+    
+    socket.on('simState', function(data) {
+        simController.updateState(data);
+    });
+    
+    socket.on('toggleLCD', function() {
+        console.log("toggleLCD");
+        serialController.send("toggleLCD\0", function(err, results) {
+           
+        });
+    });
+    
+    socket.on('reset', function() {
+        resetSim();
+    });
+    
+    ///////////////////// REST API /////////////////////
     
     var router = server.router;
     
-    // Reset the space pod!
     router.route('/reset')
     .get(function(req, res) {
-        simController.init(function() {
-            serialController.send("reset\0", function(err, results) {
-                if (err) return res.status(500).json({error:err});
-                return res.status(200).json({message:"Success!"});
-            });
+        resetSim(function(err, results) {
+            if (err) return res.status(500).json({error:err});
+            return res.status(200).json({message:"Success!"});
         })
     });
     
-    function handleSerialData(data) {
-        stateInBuffer = data;
-    }
+    router.route('/state')
+    .get(function(req, res) {
+        return res.status(200).json(simController.simState);
+    });
     
-    // Init and register
+    router.route('/spacePod')
+    .get(function(req, res) {
+        return res.status(200).json(simController.spacePod);
+    });
+    
+    ///////////////////// Init /////////////////////
+    
     async.parallel([
         function(callback) {
              simController.init(function (simState) {
@@ -57,10 +81,6 @@ module.exports = function setup(options, imports, register) {
     ],
     // optional callback
     function(err, results) {
-        
-        // Init the UI
-        // UI.init();
-        
         register(null, {
             sim: {
                 start: function() {
@@ -69,16 +89,17 @@ module.exports = function setup(options, imports, register) {
                         // `delta` is the delta time from the last frame in seconds
                         // console.log('(delta=%s)', delta);
                         
-                        simController.updateState(stateInBuffer);
-                        stateInBuffer = null;
+                        processSerialData();
                         simController.process(delta);
-                        
                         printToSerial(delta);
                         printToConsole(delta);
                         
                     }, 1000 / fps);
                     
                     console.log("Starting Sim. loopId = " + loopId);
+                    
+                    // Init the UI
+                    UI.init();
                 },
                 
                 stop: function() {
@@ -89,6 +110,32 @@ module.exports = function setup(options, imports, register) {
             }
         });
     });
+    
+    ///////////////////// Supporting Methods /////////////////////
+    
+    function resetSim(callback) {
+        simController.init(function() {
+            serialController.send("reset\0", function(err, results) {
+                if (callback) callback(err, results);
+            });
+        })
+    }
+    
+    function handleSerialData(data) {
+        _serialInBuffer = data;
+    }
+    
+    function processSerialData() {
+        
+        // Engine power
+        if (_serialInBuffer) {
+            if (_serialInBuffer.hasOwnProperty("epi")) {
+                simController.setEnginePower(_serialInBuffer.epi);
+            }
+        }
+        
+        _serialInBuffer = null;
+    }
     
     function printToSerial(delta) {
         if (!simController.simState) return;
@@ -120,16 +167,8 @@ module.exports = function setup(options, imports, register) {
     function printToConsole(delta) {
         _lastConsolePrint += delta;
         if (_lastConsolePrint + delta > PRINT_CONSOLE_INTERVAL) {
-            console.log('\033[2J');
-            console.log("  Engine:  " + (_stateOutBuffer.ep * 100) + "%");
-            console.log("  ");
-            console.log("  Fuel:    " + (_stateOutBuffer.fl * 100) + "%");
-            console.log("  Battery: " + (_stateOutBuffer.al * 100) + "%");
-            console.log("  Water:   " + (_stateOutBuffer.wl * 100) + "%");
-            console.log("  Oxygen:  " + (_stateOutBuffer.ol * 100) + "%");
-            console.log("  ");
             
-            // UI.render(simController);
+            UI.setData(_stateOutBuffer);
             
             // TODO: Move to another function, but for now can share this one since the time is aligned
             serialController.connect(null, handleSerialData);
