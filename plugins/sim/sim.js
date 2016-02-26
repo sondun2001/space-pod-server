@@ -25,8 +25,8 @@ module.exports = function setup(options, imports, register) {
     var socketio = server.socket;
     
     socketio.on('connection', function (socket) {
-        if (simController.simState) socket.emit('state', simController.simState);
-        if (simController.spacePod) socket.emit('pod', simController.spacePod);
+        if (simController.simState) socketio.emit('state', simController.simState);
+        if (simController.spacePod) socketio.emit('pod', simController.spacePod);
         
         socket.on('pod', function(data) {
             simController.updatePod(data);
