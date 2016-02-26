@@ -22,11 +22,11 @@ module.exports = function setup(options, imports, register) {
     
     ///////////////////// Sockets /////////////////////
     
-    var socketio = server.socket;
+    var io = server.socket;
     
-    socketio.on('connection', function (socket) {
-        if (simController.simState) socketio.emit('state', simController.simState);
-        if (simController.spacePod) socketio.emit('pod', simController.spacePod);
+    io.on('connection', function (socket) {
+        if (simController.simState) socket.emit('state', simController.simState);
+        if (simController.spacePod) socket.emit('pod', simController.spacePod);
         
         socket.on('pod', function(data) {
             simController.updatePod(data);
@@ -94,8 +94,8 @@ module.exports = function setup(options, imports, register) {
             return console.error(err);
         }
         
-        if (simController.simState) socketio.emit('state', simController.simState);
-        if (simController.spacePod) socketio.emit('pod', simController.spacePod);
+        if (simController.simState) io.sockets.emit('state', simController.simState);
+        if (simController.spacePod) io.sockets.emit('pod', simController.spacePod);
         
         register(null, {
             sim: {
@@ -179,7 +179,7 @@ module.exports = function setup(options, imports, register) {
             
             serialController.send(JSON.stringify(_stateOutBuffer) + "\0");
             
-            socketio.emit('state', simController.simState);
+            io.sockets.emit('state', simController.simState);
             
             _lastSerialSent = 0;
         }
