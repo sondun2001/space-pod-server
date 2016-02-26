@@ -22,24 +22,29 @@ module.exports = function setup(options, imports, register) {
     
     ///////////////////// Sockets /////////////////////
     
-    var socket = server.socket;
-    socket.on('spacePod', function(data) {
-        simController.updatePod(data);
-    });
+    var socketio = server.socket;
     
-    socket.on('simState', function(data) {
-        simController.updateState(data);
-    });
-    
-    socket.on('toggleLCD', function() {
-        console.log("toggleLCD");
-        serialController.send("toggleLCD\0", function(err, results) {
-           
+    socketio.on('connection', function (socket) {
+        if (simController.simState) socket.emit('state', simController.simState);
+        if (simController.spacePod) socket.emit('pod', simController.spacePod);
+        
+        socket.on('pod', function(data) {
+            simController.updatePod(data);
         });
-    });
-    
-    socket.on('reset', function() {
-        resetSim();
+        
+        socket.on('state', function(data) {
+            simController.updateState(data);
+        });
+        
+        socket.on('toggleLCD', function() {
+            serialController.send("toggleLCD\0", function(err, results) {
+            
+            });
+        });
+        
+        socket.on('reset', function() {
+            resetSim();
+        });
     });
     
     ///////////////////// REST API /////////////////////
@@ -59,7 +64,7 @@ module.exports = function setup(options, imports, register) {
         return res.status(200).json(simController.simState);
     });
     
-    router.route('/spacePod')
+    router.route('/pod')
     .get(function(req, res) {
         return res.status(200).json(simController.spacePod);
     });
@@ -68,8 +73,12 @@ module.exports = function setup(options, imports, register) {
     
     async.parallel([
         function(callback) {
-             simController.init(function (simState) {
-                callback(null, simState);
+             simController.init(false, function (err) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, true);
+                }
             });
         },
         function(callback) {
@@ -81,6 +90,13 @@ module.exports = function setup(options, imports, register) {
     ],
     // optional callback
     function(err, results) {
+        if (err) {
+            return console.error(err);
+        }
+        
+        if (simController.simState) socketio.emit('state', simController.simState);
+        if (simController.spacePod) socketio.emit('pod', simController.spacePod);
+        
         register(null, {
             sim: {
                 start: function() {
@@ -114,10 +130,12 @@ module.exports = function setup(options, imports, register) {
     ///////////////////// Supporting Methods /////////////////////
     
     function resetSim(callback) {
-        simController.init(function() {
+        simController.init(true, function(err) {
+            if (callback) callback(err);
+            /*
             serialController.send("reset\0", function(err, results) {
-                if (callback) callback(err, results);
             });
+            */
         })
     }
     
@@ -160,6 +178,9 @@ module.exports = function setup(options, imports, register) {
             //console.log(JSON.stringify(_stateOutBuffer));
             
             serialController.send(JSON.stringify(_stateOutBuffer) + "\0");
+            
+            socketio.emit('state', simController.simState);
+            
             _lastSerialSent = 0;
         }
     }

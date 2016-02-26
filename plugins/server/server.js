@@ -39,10 +39,11 @@ module.exports = function setup(options, imports, register) {
     app.use('/', router);
     
     io.on('connection', function (socket) {
-        console.log(' Socket connected');
+        /*
         socket.on('disconnect', function(){
             console.log('User disconnected');
         });
+        */
     });
     
     server.listen(settings.get('port'), function (callback) {

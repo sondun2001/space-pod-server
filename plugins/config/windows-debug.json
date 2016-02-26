@@ -1,7 +1,7 @@
 {
     "play_sound":true,
     "rethink": {
-        "host": "192.168.1.12",
+        "host": "127.0.0.1",
         "port": 28015,
         "db": "spacepod"
     },
