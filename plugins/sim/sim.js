@@ -69,6 +69,14 @@ module.exports = function setup(options, imports, register) {
         return res.status(200).json(simController.spacePod);
     });
     
+    router.route('/softReset')
+    .get(function(req, res) {
+        simController.simState.fuelLevel = 1;
+        simController.simState.warnings = 0;
+        simController.spacePod.numPanels = 1;
+        return res.status(200).json({state: simController.simState, pod:simController.spacePod});
+    });
+    
     ///////////////////// Init /////////////////////
     
     async.parallel([
