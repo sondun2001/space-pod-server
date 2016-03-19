@@ -6,6 +6,10 @@ module.exports.checkFuelLine = function() {
     return _checkFuelLine;
 }
 
+module.exports.reset = function() {
+    _checkFuelLine = false;
+}
+
 module.exports.demandFuel = function(simState, demand, delta) {
     // Electricity required to pump fuel
     if (!battery.drain(simState, 20, delta)) return 0;

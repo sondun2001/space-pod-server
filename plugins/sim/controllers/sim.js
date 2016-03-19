@@ -136,6 +136,12 @@ module.exports.updateState = function (data, callback) {
     }
 }
 
+module.exports.softReset = function() {
+    module.exports.updatePod({numPanels: 1});
+    module.exports.updateState({fuelLevel: 1, warnings: 0});
+    fuelSystem.reset();
+}
+
 module.exports.setEnginePower = function (power) {
     engine.setPower(power);
 }

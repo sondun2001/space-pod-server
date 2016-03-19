@@ -2,7 +2,7 @@ module.exports = function setup(options, imports, register) {
     var gameloop = require('node-gameloop');
     var async = require('async');
     var fps = 15;
-    var loopId;
+    var _loopId;
     var _serialInBuffer;
     var _stateOutBuffer = {};
     
@@ -62,19 +62,40 @@ module.exports = function setup(options, imports, register) {
     router.route('/state')
     .get(function(req, res) {
         return res.status(200).json(simController.simState);
-    });
+    })
+    .post(function(req, res) {
+        simController.updateState(req.body, function(state) {
+            return res.status(200).json(simController.simState);
+        })
+    })
     
     router.route('/pod')
     .get(function(req, res) {
+        simController.updatePod(req.body, function(pod) {
+            return res.status(200).json(simController.spacePod);
+        })
+    })
+    .post(function(req, res) {
+        for (var attrname in req.body) { simController.spacePod[attrname] = req.body[attrname]; }
         return res.status(200).json(simController.spacePod);
-    });
+    })
     
     router.route('/softReset')
     .get(function(req, res) {
-        simController.simState.fuelLevel = 1;
-        simController.simState.warnings = 0;
-        simController.spacePod.numPanels = 1;
+        simController.softReset();
         return res.status(200).json({state: simController.simState, pod:simController.spacePod});
+    });
+    
+    router.route('/stop')
+    .get(function(req, res) {
+        stopSim();
+        return res.status(200).send('Sim Stopped');
+    });
+    
+    router.route('/start')
+    .get(function(req, res) {
+        startSim();
+        return res.status(200).send('Sim Started');
     });
     
     ///////////////////// Init /////////////////////
@@ -108,32 +129,40 @@ module.exports = function setup(options, imports, register) {
         register(null, {
             sim: {
                 start: function() {
-                    // start the loop at configured framerate
-                    loopId = gameloop.setGameLoop(function(delta) {
-                        // `delta` is the delta time from the last frame in seconds
-                        // console.log('(delta=%s)', delta);
-                        
-                        processSerialData();
-                        simController.process(delta);
-                        printToSerial(delta);
-                        printToConsole(delta);
-                        
-                    }, 1000 / fps);
-                    
-                    console.log("Starting Sim. loopId = " + loopId);
+                    startSim();
                     
                     // Init the UI
                     UI.init();
                 },
                 
                 stop: function() {
-                    gameloop.clearGameLoop(loopId);
+                    stopSim();
                 }
                 
                 // onDestroy ?
             }
         });
     });
+    
+    function stopSim() {
+        gameloop.clearGameLoop(_loopId);
+    }
+    
+    function startSim() {
+        // start the loop at configured framerate
+        _loopId = gameloop.setGameLoop(function(delta) {
+            // `delta` is the delta time from the last frame in seconds
+            // console.log('(delta=%s)', delta);
+            
+            processSerialData();
+            simController.process(delta);
+            printToSerial(delta);
+            printToConsole(delta);
+            
+        }, 1000 / fps);
+        
+        console.log("Starting Sim. _loopId = " + _loopId);
+    }
     
     ///////////////////// Supporting Methods /////////////////////
     
