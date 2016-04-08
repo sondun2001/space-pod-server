@@ -15,6 +15,7 @@ npm rebuild
 ```
 
 ### How to run windows-debug
+Replace mpg123 dependency with this one https://github.com/RTK/node-speaker
 ```
 set NODE_ENV=windows-debug&&node app.js
 ```
