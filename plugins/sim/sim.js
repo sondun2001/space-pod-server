@@ -98,6 +98,12 @@ module.exports = function setup(options, imports, register) {
         return res.status(200).send('Sim Started');
     });
     
+    router.route('/refuel')
+    .get(function(req, res) {
+        simController.fuelSystem.refuel();
+        return res.status(200).send('Refueling...');
+    });
+    
     ///////////////////// Init /////////////////////
     
     async.parallel([

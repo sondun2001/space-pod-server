@@ -20,8 +20,7 @@ var spacePod = null;
 
 // TODO: Remove this, expose all components
 module.exports.battery = battery;
-
-module.exports.components = components;
+module.exports.fuelSystem = fuelSystem;
 
 module.exports.init = function (reset, callback) {
     simState = null;
@@ -42,6 +41,9 @@ module.exports.init = function (reset, callback) {
                         simState.cabinPressure = settings.get("sim:target_pressure");
                         simState.state = "OFF";
                         simState.warnings = 0;
+                        
+                        // Reset systems
+                        fuelSystem.reset();
                     }
                 } else {
                     simState = new Models.SimState({});
@@ -157,6 +159,7 @@ module.exports.process = function (delta) {
     simState.oxygenLevel -= 0.00001 * delta; // TODO: Multiply by number of occupants
     
     engine.process(simState, delta);
+    fuelSystem.process(simState, delta);
     warningSystem.process(simState, delta);
     solarPanels.process(simState, spacePod, delta);
     ECLSS.process(simState, delta);

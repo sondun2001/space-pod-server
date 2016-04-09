@@ -1,6 +1,9 @@
 var battery = require('./battery');
 var _checkFuelLine = false;
 var _systemCheckLapse = 0;
+var _refueling = false;
+
+// TODO: Have components be classes!
 
 module.exports.checkFuelLine = function() {
     return _checkFuelLine;
@@ -8,6 +11,20 @@ module.exports.checkFuelLine = function() {
 
 module.exports.reset = function() {
     _checkFuelLine = false;
+}
+
+module.exports.refuel = function() {
+    _refueling = true;
+}
+
+module.exports.process = function(simState, delta) {
+    if (_refueling) {
+        simState.fuelLevel += 0.1 * delta;
+        if (simState.fuelLevel > 1) {
+            simState.fuelLevel = 1;
+            _refueling = false;
+        }
+    }
 }
 
 module.exports.demandFuel = function(simState, demand, delta) {
