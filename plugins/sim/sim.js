@@ -45,6 +45,30 @@ module.exports = function setup(options, imports, register) {
         socket.on('reset', function() {
             resetSim();
         });
+        
+        socket.on('softReset', function() {
+            simController.softReset();
+        });
+        
+        socket.on('repairFuelLine', function() {
+            simController.fuelSystem.reset();
+        });
+        
+        socket.on('refuel', function() {
+            simController.fuelSystem.refuel();
+        });
+        
+        socket.on('stopRefuel', function() {
+            simController.fuelSystem.stopRefuel();
+        });
+        
+        socket.on('clearFlag', function(flag) {
+            simController.warningSystem.clearFlag(simController.simState, flag);
+        });
+        
+        socket.on('setEnginePower', function(power) {
+            simController.setEnginePower(power);
+        });
     });
     
     ///////////////////// REST API /////////////////////

@@ -17,6 +17,10 @@ module.exports.refuel = function() {
     _refueling = true;
 }
 
+module.exports.stopRefuel = function() {
+    _refueling = false;
+}
+
 module.exports.process = function(simState, delta) {
     if (_refueling) {
         simState.fuelLevel += 0.1 * delta;

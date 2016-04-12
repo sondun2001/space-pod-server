@@ -21,6 +21,7 @@ var spacePod = null;
 // TODO: Remove this, expose all components
 module.exports.battery = battery;
 module.exports.fuelSystem = fuelSystem;
+module.exports.warningSystem = warningSystem;
 
 module.exports.init = function (reset, callback) {
     simState = null;
@@ -40,7 +41,7 @@ module.exports.init = function (reset, callback) {
                         simState.oxygenLevel = settings.get("sim:target_oxygen");
                         simState.cabinPressure = settings.get("sim:target_pressure");
                         simState.state = "OFF";
-                        simState.warnings = 0;
+                        simState.warningFlags = 0;
                         
                         // Reset systems
                         fuelSystem.reset();
@@ -123,7 +124,7 @@ module.exports.updatePod = function(data, callback) {
 module.exports.updateState = function (data, callback) {
     if (data == undefined || data == null) return;
     
-    // console.log("Incoming: " + JSON.stringify(data));
+    console.log("Incoming: " + JSON.stringify(data));
     // Override any properties in sim with incoming data
     if (simState) {
         for (var attrname in data) { 
@@ -139,8 +140,8 @@ module.exports.updateState = function (data, callback) {
 }
 
 module.exports.softReset = function() {
-    module.exports.updatePod({numPanels: 1});
-    module.exports.updateState({fuelLevel: 1, warnings: 0});
+    module.exports.updatePod({numPanels: 0});
+    module.exports.updateState({fuelLevel: 1, warningFlags: 0});
     fuelSystem.reset();
 }
 
