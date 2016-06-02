@@ -22,6 +22,7 @@ var spacePod = null;
 module.exports.battery = battery;
 module.exports.fuelSystem = fuelSystem;
 module.exports.warningSystem = warningSystem;
+module.exports.solarPanels = solarPanels;
 
 module.exports.init = function (reset, callback) {
     simState = null;

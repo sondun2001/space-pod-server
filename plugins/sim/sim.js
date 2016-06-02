@@ -62,6 +62,10 @@ module.exports = function setup(options, imports, register) {
             simController.fuelSystem.stopRefuel();
         });
         
+        socket.on('deployPanels', function() {
+            simController.solarPanels.setNumPanels(1);
+        });
+        
         socket.on('clearFlag', function(flag) {
             simController.warningSystem.clearFlag(simController.simState, flag);
         });
