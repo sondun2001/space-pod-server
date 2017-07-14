@@ -32,6 +32,7 @@
 			"name": "Launch (Windows Config)",
 			// Type of configuration. Possible values: "node", "mono".
 			"type": "node",
+			"request": "launch",
 			// Workspace relative or absolute path to the program.
 			"program": "${workspaceRoot}/app.js",
 			// Automatically stop program after launch.

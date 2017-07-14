@@ -6,6 +6,7 @@ var battery = require('./battery');
 var lerp = require('lerp');
 
 var FUEL_BURN_RATE = settings.get("sim:fuel_burn_rate");
+var BATTERY_CHARGE_RATE = settings.get("sim:battery_charge_rate");
 
 var _powerInput = 0;
 var _targetEnginePower = 0;
@@ -20,12 +21,18 @@ module.exports.setPower = function(input) {
     _powerInput = input;
 }
 
-module.exports.process = function(simState, delta) {
+module.exports.process = function(simState, spacePod, delta) {
+    var targetEnginePower = _powerInput;
+
+    // Check for panels, don't allow engine to be on while panels deployed
+    targetEnginePower = (spacePod.panelsDeployed && _powerInput > .15) ? .15 : _powerInput;
+
+    // What is the fuel demand for target engine power
     var enginePowerFuelDemand = Math.pow(_powerInput, 3) * FUEL_BURN_RATE * delta;
     
     // Obtain FUEL
     var fuelInput = fuelSystem.demandFuel(simState, enginePowerFuelDemand, delta);
-    var targetEnginePower = (enginePowerFuelDemand == 0) ? 0 : _powerInput * (fuelInput / enginePowerFuelDemand);
+    targetEnginePower = (enginePowerFuelDemand == 0) ? 0 : targetEnginePower * (fuelInput / enginePowerFuelDemand);
     
     if (targetEnginePower != _targetEnginePower) {
         _targetEnginePower = targetEnginePower;
@@ -44,7 +51,7 @@ module.exports.process = function(simState, delta) {
         _engineSound.setVolume(simState.enginePower);
         
         // Charge battery when engine is on
-        battery.charge(simState, 10 * simState.enginePower, delta);
+        battery.charge(simState, BATTERY_CHARGE_RATE, delta);
     } else if (simState.enginePower == 0 && _engineSound.isPlaying()) {
         _engineSound.stop();
     }

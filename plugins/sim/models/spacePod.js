@@ -3,9 +3,8 @@ var type = thinky.type;
 var settings = require('nconf');
 
 var SpacePod = thinky.createModel("SpacePod", {
-    numPanels: type.number().default(0),
-    panelWattage: type.number().default(200),
-    batteryCapacity: type.number().default(settings.get("sim:battery_watts"))
+    numPanels: type.number().default(2),
+    panelsDeployed: type.boolean().default(false)
 });
 
 module.exports = SpacePod;

@@ -63,7 +63,10 @@ module.exports = function setup(options, imports, register) {
         });
         
         socket.on('deployPanels', function() {
-            simController.solarPanels.setNumPanels(1);
+            //simController.solarPanels.setNumPanels(1);
+            simController.spacePod.panelsDeployed = !simController.spacePod.panelsDeployed;
+            simController.updatePod(simController.spacePod);
+            socket.emit('pod', simController.spacePod);
         });
         
         socket.on('clearFlag', function(flag) {

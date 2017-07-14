@@ -70,9 +70,7 @@ module.exports.init = function (reset, callback) {
                     spacePod = pods[0];
                     
                     if (reset) {
-                        spacePod.numPanels = 0;
-                        spacePod.panelWattage = 200;
-                        spacePod.batteryCapacity = settings.get("sim:battery_watts");
+                        spacePod.numPanels = 2;
                     }
                 } else {
                     spacePod = new Models.SpacePod({});
@@ -141,7 +139,7 @@ module.exports.updateState = function (data, callback) {
 }
 
 module.exports.softReset = function() {
-    module.exports.updatePod({numPanels: 0});
+    module.exports.updatePod({numPanels: 2, panelsDeployed:false});
     module.exports.updateState({fuelLevel: 1, warningFlags: 0});
     fuelSystem.reset();
 }
@@ -160,7 +158,7 @@ module.exports.process = function (delta) {
     
     simState.oxygenLevel -= 0.00001 * delta; // TODO: Multiply by number of occupants
     
-    engine.process(simState, delta);
+    engine.process(simState, spacePod, delta);
     fuelSystem.process(simState, delta);
     warningSystem.process(simState, delta);
     solarPanels.process(simState, spacePod, delta);
