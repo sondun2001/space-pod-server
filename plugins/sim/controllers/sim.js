@@ -21,6 +21,7 @@ var spacePod = null;
 // TODO: Remove this, expose all components
 module.exports.battery = battery;
 module.exports.fuelSystem = fuelSystem;
+module.exports.ECLSS = ECLSS;
 module.exports.warningSystem = warningSystem;
 module.exports.solarPanels = solarPanels;
 

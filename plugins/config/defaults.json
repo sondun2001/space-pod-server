@@ -23,7 +23,7 @@
         "battery_watts": 1000,
         "panel_watts": 30,
         "battery_charge_rate": 25,
-        "fuel_burn_rate": 0.005,
+        "fuel_burn_rate": 0.003,
         "target_oxygen": 0.21,
         "target_pressure": 100,
         "fuel_low_threshold": 0.1,

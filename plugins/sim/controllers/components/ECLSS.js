@@ -3,6 +3,8 @@ var battery = require('./battery');
 
 var TARGET_OXYGEN = settings.get("sim:target_oxygen");
 
+var _refueling = false;
+
 // http://science.howstuffworks.com/oxygen-made-aboard-spacecraft.htm
 // http://www.spaceacademy.net.au/flight/emg/spcdp.htm
 
@@ -38,14 +40,29 @@ rho = mass / vol		'compute new density
 press = rho * Rg * temp / mw	.compute new pressure
 LOOP WHILE press > press0 / 10  'do while pressure>10% initial
 */
+module.exports.refuel = function() {
+    _refueling = true;
+}
+
+module.exports.stopRefuel = function() {
+    _refueling = false;
+}
 
 module.exports.process = function(simState, delta) {
+    if (_refueling) {
+        simState.waterLevel += 0.01 * delta;
+        if (simState.waterLevel > 1) {
+            simState.waterLevel = 1;
+            _refueling = false;
+        }
+    }
+
     // Use water to generate oxygen
     if (simState.oxygenLevel < TARGET_OXYGEN) {
         var waterRequired = 0.0005 * delta;
-        if (simState.waterLevel > waterRequired && battery.drain(simState, 10, delta)) {
+        if (simState.waterLevel > waterRequired && battery.drain(simState, 5, delta)) {
             simState.waterLevel -= waterRequired;
-            simState.oxygenLevel += 0.0005 * delta;
+            simState.oxygenLevel += 0.0008 * delta;
         }
     }
 }

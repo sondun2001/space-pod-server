@@ -7,7 +7,7 @@ var battery = require('./battery');
 // Warning Flags (use bitwise << 1, << 2, << 3, etc)
 var HULL_DAMAGE = settings.get("warningFlags:hull_damage"); // 00000001
 var CABIN_PRESSURE = settings.get("warningFlags:cabon_pressure"); // 00000010
-var OXYGEN = settings.get("warningFlags:oxygen"); // 00000100
+var OXYGEN_LOW = settings.get("warningFlags:oxygen_low"); // 00000100
 var FUEL_LOW = settings.get("warningFlags:fuel_low"); // 00001000
 var ENGINE_MALFUNCTION = settings.get("warningFlags:engine_malfunction"); // 00010000
 var BATTERY_HEALTH = settings.get("warningFlags:battery_health"); // 00100000
@@ -61,9 +61,9 @@ module.exports.process = function(simState, delta) {
     
     // Check Oxygen
     if (simState.oxygenLevel < OXYGEN_LOW_THRESHOLD || simState.oxygenLevel > OXYGEN_HIGH_THRESHOLD) {
-        simState.warningFlags |= OXYGEN;
+        simState.warningFlags |= OXYGEN_LOW;
     } else {
-        simState.warningFlags &= ~OXYGEN;
+        simState.warningFlags &= ~OXYGEN_LOW;
     }
     
     if (simState.warningFlags > 0 && !_warningSound.isPlaying()) {
