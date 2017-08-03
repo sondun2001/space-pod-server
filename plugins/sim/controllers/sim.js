@@ -156,8 +156,9 @@ module.exports.process = function (delta) {
             // Use Fuel
             // Did something go wrong?
     
-    simState.oxygenLevel -= 0.00001 * delta; // TODO: Multiply by number of occupants
-    
+    // TODO: Take into account occupants
+    simState.oxygenLevel -= 0.0005 * delta;
+
     engine.process(simState, spacePod, delta);
     fuelSystem.process(simState, delta);
     warningSystem.process(simState, delta);

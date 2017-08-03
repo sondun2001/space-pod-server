@@ -42,10 +42,10 @@ LOOP WHILE press > press0 / 10  'do while pressure>10% initial
 module.exports.process = function(simState, delta) {
     // Use water to generate oxygen
     if (simState.oxygenLevel < TARGET_OXYGEN) {
-        var waterRequired = 0.0001 * delta;
+        var waterRequired = 0.0005 * delta;
         if (simState.waterLevel > waterRequired && battery.drain(simState, 10, delta)) {
             simState.waterLevel -= waterRequired;
-            simState.oxygenLevel += 0.00005 * delta;
+            simState.oxygenLevel += 0.0005 * delta;
         }
     }
 }
