@@ -141,7 +141,7 @@ module.exports.updateState = function (data, callback) {
 
 module.exports.softReset = function() {
     module.exports.updatePod({numPanels: 2, panelsDeployed:false});
-    module.exports.updateState({fuelLevel: 1, warningFlags: 0});
+    module.exports.updateState({fuelLevel: 1, auxLevel:1, waterLevel:1, warningFlags: 0});
     fuelSystem.reset();
 }
 
@@ -165,5 +165,10 @@ module.exports.process = function (delta) {
     warningSystem.process(simState, delta);
     solarPanels.process(simState, spacePod, delta);
     ECLSS.process(simState, delta);
+
+    // Cap O2 depletion
+    if (simState.oxygenLevel < 0)
+        simState.oxygenLevel = 0;
+
     //console.log(JSON.stringify(simState));
 }
