@@ -11,6 +11,7 @@ alsamixer
 ###Switching platforms
 Replace mpg123 dependency with this one https://github.com/RTK/node-speaker then rebuild
 If switching platforms, some modules will need to be rebuilt. You can do so by running the following:
+windows: npm install speaker --win32
 ```
 npm rebuild
 ```

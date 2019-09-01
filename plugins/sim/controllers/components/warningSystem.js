@@ -1,6 +1,5 @@
 // WARNING SYSTEM
 var settings = require('nconf');
-var Sound = require('../sound.js').Sound;
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
 
@@ -29,10 +28,14 @@ var mask = ~(FLAG_A | FLAG_C); // ~0101 => 1010
 flags &= mask;   // 1101 & 1010 => 1000
 m_warningFlags &= ~FUEL_LOW
 */
-var _warningSound = new Sound('warning.mp3');
-_warningSound.on('end',function(item){
-    _warningSound.play();
-});
+
+if (settings.get("play_sound")) {
+    var Sound = require('../sound.js').Sound;
+    var _warningSound = new Sound('warning.mp3');
+    _warningSound.on('end',function(item){
+        _warningSound.play();
+    });
+}
 
 module.exports.process = function(simState, delta) {
     
@@ -66,10 +69,12 @@ module.exports.process = function(simState, delta) {
         simState.warningFlags &= ~OXYGEN_LOW;
     }
     
-    if (simState.warningFlags > 0 && !_warningSound.isPlaying()) {
-        _warningSound.play();
-    } else if (simState.warningFlags == 0 && _warningSound.isPlaying()) {
-        _warningSound.stop();
+    if (_warningSound) {
+        if (simState.warningFlags > 0 && !_warningSound.isPlaying()) {
+            _warningSound.play();
+        } else if (simState.warningFlags == 0 && _warningSound.isPlaying()) {
+            _warningSound.stop();
+        }
     }
 }
 

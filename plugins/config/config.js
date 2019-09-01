@@ -11,6 +11,7 @@ module.exports = function setup(options, imports, register) {
     configPath = path.join(__dirname, 'defaults.json');
     nconf.file('defaults', configPath);
      
+    console.log("Registering Config: " + process.env.NODE_ENV);
     register(null, {
         config: {
             get: function (key) {

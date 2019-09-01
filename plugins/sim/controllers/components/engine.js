@@ -1,6 +1,5 @@
 // ENGINE / ROCKET
 var settings = require("nconf");
-var Sound = require('../sound.js').Sound;
 var fuelSystem = require('./fuelSystem');
 var battery = require('./battery');
 var lerp = require('lerp');
@@ -12,11 +11,13 @@ var _powerInput = 0;
 var _targetEnginePower = 0;
 var _enginePowerTime = 0;
 
-var _engineSound = new Sound('rocket.mp3');
-_engineSound.on('end',function(item) {
-    _engineSound.play();
-});
-
+if (settings.get("play_sound")) {
+    var Sound = require('../sound.js').Sound;
+    var _engineSound = new Sound('rocket.mp3');
+    _engineSound.on('end',function(item) {
+        _engineSound.play();
+    }); 
+}
 module.exports.setPower = function(input) {
     _powerInput = input;
 }
@@ -47,13 +48,17 @@ module.exports.process = function(simState, spacePod, delta) {
     }
     
     if (simState.enginePower > 0) {
-        if (!_engineSound.isPlaying()) _engineSound.play();
-        _engineSound.setVolume(simState.enginePower);
+        if (_engineSound) {
+            if (!_engineSound.isPlaying()) _engineSound.play();
+            _engineSound.setVolume(simState.enginePower);
+        }
         
         // Charge battery when engine is on
         battery.charge(simState, BATTERY_CHARGE_RATE, delta);
-    } else if (simState.enginePower == 0 && _engineSound.isPlaying()) {
-        _engineSound.stop();
+    } else if (simState.enginePower == 0) {
+        if (_engineSound && _engineSound.isPlaying()){
+            _engineSound.stop();
+        }
     }
     
     // Calculate Thrust?

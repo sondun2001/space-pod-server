@@ -1,9 +1,4 @@
 {
     "play_sound":true,
-    "rethink": {
-        "host": "localhost",
-        "port": 28015,
-        "db": "spacepod"
-    },
     "serial_port":"/dev/ttyUSB0"
 }

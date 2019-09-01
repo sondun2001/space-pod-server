@@ -7,7 +7,6 @@ module.exports = function setup(options, imports, register) {
     var _stateOutBuffer = {};
     
     var server = imports.server;
-    var auth = imports.auth;
     
     var simController = require('./controllers/sim.js');
     var SerialController = require('./controllers/serial.js');
@@ -167,6 +166,7 @@ module.exports = function setup(options, imports, register) {
         if (simController.simState) io.sockets.emit('state', simController.simState);
         if (simController.spacePod) io.sockets.emit('pod', simController.spacePod);
         
+        console.log("Registering Sim");
         register(null, {
             sim: {
                 start: function() {

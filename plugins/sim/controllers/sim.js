@@ -1,8 +1,7 @@
 var _ = require('underscore');
 var settings = require('nconf');
 var async = require('async');
-var settings = require('nconf');
-var soundController = require('./sound');
+//var soundController = require('./sound');
 
 // SPACE POD COMPONENTS
 var components = require('./components');
@@ -12,8 +11,6 @@ var engine = components.Engine;
 var warningSystem = components.WarningSystem;
 var solarPanels = components.SolarPanels;
 var ECLSS = components.ECLSS;
-
-var Models = require('../models/all.js');
 
 var simState = null;
 var spacePod = null;
@@ -31,64 +28,25 @@ module.exports.init = function (reset, callback) {
     
     async.parallel([
         function(callback) {
-             Models.SimState.run().then(function(states) {
-                if (states && states.length > 0) {
-                    simState = states[0];
-                    
-                    if (reset) {
-                        simState.enginePower = 0;
-                        simState.fuelLevel = 1;
-                        simState.auxLevel = 1;
-                        simState.waterLevel = 1;
-                        simState.oxygenLevel = settings.get("sim:target_oxygen");
-                        simState.cabinPressure = settings.get("sim:target_pressure");
-                        simState.state = "OFF";
-                        simState.warningFlags = 0;
-                        
-                        // Reset systems
-                        fuelSystem.reset();
-                    }
-                } else {
-                    simState = new Models.SimState({});
-                }
-                
-                simState.save(function(err) {
-                    if (err) {
-                        callback(err, null);
-                    } else {
-                        callback(null, simState);
-                    }
-                });
-            }).error(function(err) {
-                if (err) {
-                    callback(err, null);
-                }
-            });
+            simState = {};
+            simState.enginePower = 0;
+            simState.fuelLevel = 1;
+            simState.auxLevel = 1;
+            simState.waterLevel = 1;
+            simState.oxygenLevel = settings.get("sim:target_oxygen");
+            simState.cabinPressure = settings.get("sim:target_pressure");
+            simState.state = "OFF";
+            simState.warningFlags = 0;
+            
+            // Reset systems
+            fuelSystem.reset();
+            
+            callback(null, simState);
         },
         function(callback) {
-            Models.SpacePod.run().then(function(pods) {
-                if (pods && pods.length > 0) {
-                    spacePod = pods[0];
-                    
-                    if (reset) {
-                        spacePod.numPanels = 2;
-                    }
-                } else {
-                    spacePod = new Models.SpacePod({});
-                }
-                
-                spacePod.save(function(err) {
-                    if (err) {
-                        callback(err, null);
-                    } else {
-                        callback(null, spacePod);
-                    }
-                });
-            }).error(function(err) {
-                if (err) {
-                    callback(err, null);
-                }
-            });
+            spacePod = {}; 
+            spacePod.numPanels = 2;
+            callback(null, spacePod);
         }
     ],
     // optional callback
@@ -110,14 +68,10 @@ module.exports.init = function (reset, callback) {
 module.exports.updatePod = function(data, callback) {
     if (spacePod) {
         for (var attrname in data) { 
-            if (spacePod.hasOwnProperty(attrname)) spacePod[attrname] = data[attrname]; 
+            spacePod[attrname] = data[attrname]; 
         }
         
-        spacePod.save(function(err) {
-            if (!err) {
-                if (callback != null) callback(spacePod);
-            }
-        });
+        if (callback != null) callback(spacePod);
     }
 }
 
@@ -128,14 +82,10 @@ module.exports.updateState = function (data, callback) {
     // Override any properties in sim with incoming data
     if (simState) {
         for (var attrname in data) { 
-            if (simState.hasOwnProperty(attrname)) simState[attrname] = data[attrname]; 
+            simState[attrname] = data[attrname]; 
         }
         
-        simState.save(function(err) {
-            if (!err) {
-                if (callback != null) callback(simState);
-            }
-        });
+        if (callback != null) callback(simState);
     }
 }
 

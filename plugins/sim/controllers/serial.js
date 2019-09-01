@@ -71,11 +71,11 @@ SerialConnection.prototype.connect = function(connectHandler, receiveHandler) {
             self._isConnecting = false;
             if ( error ) {
                 self._isConnected = false;
-                // console.log('failed to open: '+error);
+                console.log('failed to open: '+error);
                 if (self._onConnect) self._onConnect('Connection Not Oppened');
             } else {
                 self._isConnected = true;
-                // console.log('Serial connection open');
+                console.log('Serial connection open');
                 if (self._onConnect) self._onConnect();
                 self._arduinoSerialPort.on('data', function(data) {
                     //console.log("Serial Data: " + data);

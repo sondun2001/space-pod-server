@@ -6,11 +6,6 @@
     "session_key": "spacepodsecretsession",
     "google_client_id": "297745192174-kgufcbkbtb9cabv8rpbc49ba4p5af4qb.apps.googleusercontent.com",
     "google_client_secret": "-GPo9vyXlJf90BULXWp_eQmr",
-    "rethink": {
-        "host": "localhost",
-        "port": 28015,
-        "db": "spacepod"
-    },
     "test_user": { 
         "email": "sondun2001@gmail.com",
         "name": "sondun2001", 
