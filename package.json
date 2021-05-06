@@ -37,7 +37,7 @@
     "socket.io": "^2.2.0",
     "speaker": "^0.2.6",
     "uid": "0.0.2",
-    "underscore": "^1.9.1",
+    "underscore": "^1.12.1",
     "validator": "^4.8.0",
     "wav": "^1.0.2",
     "winston": "^2.4.4"
