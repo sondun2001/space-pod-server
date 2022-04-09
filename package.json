@@ -22,7 +22,7 @@
     "jsonwebtoken": "^8.5.1",
     "lame": "^1.2.4",
     "lerp": "^1.0.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "nconf": "^0.10.0",
     "node-gameloop": "^0.1.4",
     "passport": "^0.3.0",
