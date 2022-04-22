@@ -23,7 +23,7 @@
     "lame": "^1.2.4",
     "lerp": "^1.0.3",
     "moment": "^2.24.0",
-    "nconf": "^0.10.0",
+    "nconf": "^0.11.4",
     "node-gameloop": "^0.1.4",
     "passport": "^0.3.0",
     "passport-google-oauth": "^0.2.0",
