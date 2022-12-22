@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lame": "^1.2.4",
     "lerp": "^1.0.3",
     "moment": "^2.24.0",
